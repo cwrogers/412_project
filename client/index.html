@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="materialize/css/materialize.min.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="materialize/js/materialize.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.3/socket.io.min.js" integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi" crossorigin="anonymous"></script>
+    <script src="main.js"></script>
+    <title>CHAT APPPP</title>
+</head>
+
+<style>
+    #app-wrapper {
+        position:absolute;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    #chat-wrapper {
+        flex: 1 1 100vw;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    /*chat-list mobile query*/
+
+    #chat-list {
+        flex: 0 0 auto;
+        width: 30%;
+        max-width: 320px;
+        height: 100%;
+        border-right:1px solid #e0e0e0;
+        display:flex;
+        margin:0;
+    }
+    @media only screen and (max-width: 600px) {
+        #chat-list {
+            width:0;
+            visibility: hidden;
+        }
+        .sidenav .user-view {
+            padding: 40px !important;
+            line-height: 24px;
+        }
+    }
+    #messages-area {
+        flex: 1 1 auto;
+        display:flex;
+        flex-direction: column;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    #messages {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+    }
+    #spacer {
+        flex: 0;
+        height: 100px;
+    }
+    #messages p {
+        flex: 1 1 auto;
+    }
+    #messages-wrapper {
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 1px;
+        overflow-y: scroll;
+        justify-content: flex-end;
+    }
+    .msg {
+        max-width: 400px;
+        margin:5px 5px;
+        padding: 2.5px 5px;
+        border-radius: 10px;
+    }
+    .grey-msg {
+        background: #e0e0e0;
+        align-self: flex-start;
+    }
+    .blue-msg {
+        background: #90caf9;
+        align-self: flex-end;
+    }
+    .collection {
+        border: none;
+        z-index: -1;
+    }
+    .collection-item {
+        width: 100%;
+    }
+</style>
+
+<body>
+<!--materializecss navbar with drawer-->
+
+<!-- split view 30 70-->
+<div id="app-wrapper">
+    <nav>
+        <div class="nav-wrapper">
+            <a href="#" class="brand-logo">CHAT APP</a>
+            <ul id="nav-mobile" class="right hide-on-small-only">
+                <li><a href="#" id="logoutBtn">Log out</a></li>
+            </ul>
+            <a href="#" data-target="mobile-demo" class="sidenav-trigger hide-on-med-and-up">
+                <i class="material-icons">menu</i>
+            </a>
+        </div>
+    </nav>
+    <!--mobile nav side bar-->
+    <ul class="sidenav" id="mobile-demo">
+        <li><div class="user-view">
+            <div class="background">
+                <img src="
+                https://uhdwallpapers.org/uploads/cache/810236104/dark-material-design_600x338-mm-90.jpg
+                ">
+            </div>
+            <a href="#name"><span class="white-text name-placeholder">John Doe</span></a><br style="margin-bottom: 10px">
+            <a href="#email"><span class="white-text handle-placeholder">jdandturk@gmail.com</span></a>
+        </div></li>
+        <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+        <li><a href="#!">Second Link</a></li>
+        <li><div class="divider"></div></li>
+        <li><a class="subheader">Chats</a></li>
+        <div id="mobile-chat-list">
+
+        </div>
+
+    </ul>
+    <div id="chat-wrapper">
+        <ul id="chat-list" class="collection">
+        </ul>
+        <div id="messages-area">
+            <div id="messages">
+                <div id="spacer"></div>
+                <div id="messages-wrapper">
+                </div>
+            </div>
+            <div id="typing-indicator">
+            </div>
+            <div id="message-input">
+                <input type="text" id="message" />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    // floating button
+    document.addEventListener('DOMContentLoaded', function() {
+        // setup mobile nav
+        var elems = document.querySelectorAll('.sidenav');
+        var instances = M.Sidenav.init(elems, {});
+        // setup drop
+        var elems = document.querySelectorAll('.dropdown-button');
+        console.log("ELEMS", elems);
+        var instances = M.Dropdown.init(elems, {
+            hover: true,
+            constrainWidth: false,
+        });
+    });
+</script>
+</html>

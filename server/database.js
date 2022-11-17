@@ -81,10 +81,23 @@ async function getUserByEmail(email) {
     return res.rows[0];
 }
 
+async function changeHandle(id, handle) {
+   // update handle
+    await pool.query(`UPDATE "User" SET handle = $1 WHERE user_id = $2`, [handle, id]);
+    return true;
+}
+
 
 // get all messages for a chat from the database
-function getMessages(chat, offset) {
+async function getMessages(chat, offset) {
+    // return an array of messages
+    return (await pool.query(`SELECT * FROM "Message" WHERE chat_id = $1 ORDER BY date DESC LIMIT 20 OFFSET $2`, [chat, offset])).rows;
+}
 
+async function sendMessage(chatId, userId, message) {
+    // check that user is in chat
+    let res = await pool.query(`INSERT INTO "Message" VALUES (DEFAULT, $1, $2, $3, DEFAULT, NULL, NULL, NULL) RETURNING message_id`, [chatId, userId, message]);
+    return res;
 }
 
 // create a new message in the database
@@ -92,14 +105,28 @@ function createMessage(chat, message) {
 
 }
 
+async function getChats(userId) {
+    let c = await pool.query(`SELECT * FROM "Chat" WHERE $1 = ANY (members)`, [userId]);
+    return c.rows;
+}
+
+
+async function createChat(userId, userHandles) {
+    let defaultChatName = userHandles.join(', ');
+    let chatId = await pool.query(`INSERT INTO Chat VALUES (DEFAULT, $1, $2) RETURNING chat_id`, [defaultChatName, [userId, ...userHandles]]);
+    return chatId;
+}
 
 // export functions
 module.exports = {
-    authenticateUser: authenticateUser,
+    authenticateUser,
     registerUser,
     getUserById,
     getUserByHandle,
     getUserByEmail,
+    changeHandle,
+    getChats,
+    createChat,
     getMessages,
-    createMessage,
+    sendMessage,
 };

@@ -2,6 +2,7 @@ let express = require('express');
 let swaggerUi = require('swagger-ui-express');
 // set up express app
 const app = express();
+const server = require('http').createServer(app);
 app.use(express.json());
 
 //basic jwt middleware
@@ -13,16 +14,21 @@ const jwtMiddleware = (req, res, next) => {
         res.status(401).json({success: false, error: "No token provided"});
         return;
     }
+
     token = token.replace('Bearer ', '');
     jwt.verify(token, jwtSecret, (err, decoded) => {
         if (err) {
             res.status(401).json({success: false, error: "Invalid token"});
             return;
         }
+        // get user id from token
+        req.user_id = decoded.user_id;
         req.user = decoded;
         next();
     });
 }
+
+app.use(express.static('../client'))
 
 // build controllers
 // let controllers = {
@@ -41,6 +47,7 @@ let unAuthenticatedRoutes = {
 // build authenticated routes
 let authenticatedRoutes = {
     'user': require('./controllers/user_controller'),
+    'chats': require('./controllers/chat_controller')
 }
 
 // set up express app to use controllers
@@ -51,8 +58,16 @@ for(let key in authenticatedRoutes) {
     app.use('/api/' + key, jwtMiddleware, authenticatedRoutes[key]);
 }
 
+SocketController = require('./controllers/socket_controller');
+let socketController = new SocketController(server);
+
+app.get("/rooms" , (req, res) => {
+    let rooms = socketController.io.sockets.adapter.rooms;
+    console.log("ROOMS:", rooms);
+    res.json(rooms);
+});
 // set up port
-const port = 3333;
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+const port = 22222;
+server.listen(port, () => {
+    console.log(`Server started on port ${port}`);
 });
