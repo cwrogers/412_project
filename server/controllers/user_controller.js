@@ -1,5 +1,3 @@
-
-
 let route = require('express').Router();
 let database = require('../database');
 
@@ -23,6 +21,21 @@ route.post('/change_password', async (req, res) => {
         return;
     }
     database.changePassword(user_id, new_password);
+});
+
+// change handle
+route.post('/change_handle', async (req, res) => {
+    let user_id = req.body.user;
+    let new_handle = req.body.new_handle;
+    res.json({user_id, new_handle})
+    return;
+    // check if handle is already in use
+    if(await database.getUserByHandle(new_handle) != null) {
+        res.status(403).json({success: false, error: "Handle already in use"});
+        return;
+    }
+    let success = await database.changeHandle(user_id, new_handle);
+    res.json({success: success});
 });
 
 

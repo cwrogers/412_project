@@ -17,14 +17,24 @@ route.post('/login', async (req, res) => {
 
     // if user is not found, return 401
     if (!user) {
-        res.status(401).json({success: false});
+        res.status(401).json({
+            code: 401,
+            success: false,
+            error: "Incorrect email or password"
+        });
         return;
     }
-
     // gen token with user id
-    let token = jwt.sign({user_id: user.id}, jwtSecret, {expiresIn: '1h'});
+    let token = jwt.sign({user_id: user.user_id}, jwtSecret, {expiresIn: '48h'});
     user.token = token;
-    res.send(user);
+
+    let resp = {
+        code: 200,
+        success: true,
+        user
+    }
+
+    res.send(resp);
 });
 
 route.post('/register', async (req, res) => {
