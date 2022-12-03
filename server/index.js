@@ -60,36 +60,6 @@ for(let key in authenticatedRoutes) {
     app.use('/api/' + key, jwtMiddleware, authenticatedRoutes[key]);
 }
 
-
-//add recipes to favorites
-app.post('/api/favorites', jwtMiddleware, async (req, res) => {
-    let user_id = req.user_id;
-    let recipe_url = req.body.url;
-    let recipe_name = req.body.name;
-    let recipe_image = req.body.image;
-    let recipe_source = req.body.source;
-    let ingredients = req.body.ingredients;
-    await database.addFavorite(user_id, recipe_name, recipe_url, recipe_image, recipe_source, ingredients);
-    res.send({success: true});
-})
-
-app.get('/api/favorites', jwtMiddleware, async (req, res) => {
-    let user_id = req.user_id;
-    let favorites = await database.getFavorites(user_id);
-    res.send({success: true, favorites});
-})
-
-//remove recipes from favorites
-app.delete('/api/favorites', jwtMiddleware, async (req, res) => {
-    let user_id = req.user_id;
-    let recipe_name = req.body.name;
-    let recipe_url = req.body.url;
-    await database.deleteFavorite(user_id, recipe_name, recipe_url);
-    res.send({success: true});
-});
-
-
-
 SocketController = require('./controllers/socket_controller');
 let socketController = new SocketController(server);
 
