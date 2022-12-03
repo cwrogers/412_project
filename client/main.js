@@ -595,7 +595,7 @@ async function main() {
         window.location.href = "./login.html"
     }
 
-    socket = io("http://72.211.138.113:22222", {
+    socket = io("http://localhost:22222", {
         query: {
             token: cookies.login,
             user_id: cookies.user_id
