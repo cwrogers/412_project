@@ -11,9 +11,59 @@
     <script src="https://cdn.socket.io/4.5.3/socket.io.min.js" integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi" crossorigin="anonymous"></script>
     <script src="main.js"></script>
     <title>CHAT APPPP</title>
+    
+    <!-- windows add to homescreen hide browser features -->
+    <meta name="msapplication-navbutton-color" content="black">
+    <meta name="msapplication-TileColor" content="black">
+    <meta name="msapplication-TileImage" content="images/icons/ms-icon-144x144.png">
+    <meta name="msapplication-config" content="browserconfig.xml">
+    <!-- add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <!-- add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="CHAT APPPP">
+    <!-- add to homescreen for Windows -->
+    <meta name="msapplication-TileImage" content="images/icons/ms-icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+    <!-- color the status bar on mobile devices -->
+    <meta name="theme-color" content="#3771de">
+    <!-- mobile web manifest-->
+    <link rel="manifest" href="./manifest.webmanifest">
+
+    
 </head>
 
 <style>
+
+    .input-field label {
+        color: #000;
+    }
+    /* label focus color */
+    .input-field input[type=text]:focus + label {
+        color: #000;
+    }
+    /* label underline focus color */
+    .input-field input[type=text]:focus {
+        border-bottom: 1px solid #000;
+        box-shadow: 0 1px 0 0 #000;
+    }
+    /* valid color */
+    .input-field input[type=text].valid {
+        border-bottom: 1px solid #000;
+        box-shadow: 0 1px 0 0 #000;
+    }
+    /* invalid color */
+    .input-field input[type=text].invalid {
+        border-bottom: 1px solid #000;
+        box-shadow: 0 1px 0 0 #000;
+    }
+    /* icon prefix focus color */
+    .input-field .prefix.active {
+        color: #000;
+        border-left: none;
+    }
+
     #app-wrapper {
         position:absolute;
         width: 100%;
@@ -35,7 +85,6 @@
         max-width: 320px;
         height: 100%;
         border-right:1px solid #e0e0e0;
-        display:flex;
         margin:0;
     }
     @media only screen and (max-width: 600px) {
@@ -49,7 +98,7 @@
         }
     }
     #messages-area {
-        flex: 1 1 auto;
+        flex: 1 1;
         display:flex;
         flex-direction: column;
         border-bottom: 1px solid #e0e0e0;
@@ -74,12 +123,32 @@
         flex-direction: column;
         flex: 1 1 1px;
         overflow-y: scroll;
-        justify-content: flex-end;
+    }
+    #message-input {
+        display: flex;
+        background: #e6e6e6;
+        margin: 10px;
+        margin-top:0px;
+        padding: 0px 5px;
+        border-radius: 20px;
+    }
+    #message-input.reply  {
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+    }
+    #message-input input {
+        padding: 0px 15px;
+        margin: 0;
+        border: none;
+    }
+    #message:focus {
+        border: none!important;
+        box-shadow: none!important;
     }
     .msg {
         max-width: 400px;
         margin:5px 5px;
-        padding: 2.5px 5px;
+        padding: 5px 8px;
         border-radius: 10px;
     }
     .grey-msg {
@@ -90,28 +159,123 @@
         background: #90caf9;
         align-self: flex-end;
     }
+    
+    .blue-msg.selected:after {
+        right:10px;
+    }
+    .msg.selected:after {
+        content: attr(timestamp);
+        border-bottom: 0;
+        border-right: 0;
+        display: block;
+        white-space: nowrap;
+    }
     .collection {
         border: none;
-        z-index: -1;
+    }
+    nav {
+        z-index:5;
+        background-color: #3771de;
+    }
+    /* small media query */
+    @media only screen and (min-width: 600px) {
+        nav .brand-logo {
+            left:20px;
+        }
     }
     .collection-item {
         width: 100%;
     }
+    #send-btn {
+        transform: translate(-10px, 8px);
+        cursor: pointer;
+    }
+    #new-chat-search-area {
+        /*height:0;
+        visibility: hidden;*/
+    }
+    .collection-item a {
+        color: #000 !important;
+    }
+
+    #reply-area {
+        display: block;
+        background:#aeaeae;
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 5px;
+        padding-left: 15px;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        padding-right:10px;
+        height: 0;
+        visibility: hidden;
+    }
+    .reply-msg {
+        padding: 0px 8px;
+        padding-bottom:5px;
+        padding-top: 5px;
+        border-radius: 10px 10px 0 0;
+        border-bottom: 1px solid rgba(20,20,20,.25);
+        border-left: 5px solid rgba(20,20,20,.25);
+    }
+
+    .reply-wrapper {
+        max-width: 400px;
+        border-radius: 10px;
+        margin: 5px 5px;
+    }
+    
+    .sender {
+        font-weight: bold;
+        font-size: .8em;
+    }
+
+    .msg.reply#text {
+        padding: 5px 8px;
+    }
+
+    .modal {
+        text-align: center;
+    }
+
+    .re-right {
+        align-self: flex-end;
+    }
+    .reactions {
+        max-width: 400px;
+        margin: 0px 5px;
+    }
+    .reaction {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        margin: 0 5px;
+        cursor: pointer;
+        text-align: center;
+        line-height: 30px;
+    }
+    .collection .collection-item.active {
+        background-color: #e0e0e0;
+    }
 </style>
 
 <body>
-<!--materializecss navbar with drawer-->
-
-<!-- split view 30 70-->
 <div id="app-wrapper">
     <nav>
         <div class="nav-wrapper">
             <a href="#" class="brand-logo">CHAT APP</a>
             <ul id="nav-mobile" class="right hide-on-small-only">
+                <li><a href="#" id="new-chat-btn">New Chat</a></li>
                 <li><a href="#" id="logoutBtn">Log out</a></li>
             </ul>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger hide-on-med-and-up">
                 <i class="material-icons">menu</i>
+            </a>
+             <a href="#" class="right hide-on-med-and-up" onclick="newChatPressed()">
+                <i class="material-icons">add</i>
             </a>
         </div>
     </nav>
@@ -126,8 +290,7 @@
             <a href="#name"><span class="white-text name-placeholder">John Doe</span></a><br style="margin-bottom: 10px">
             <a href="#email"><span class="white-text handle-placeholder">jdandturk@gmail.com</span></a>
         </div></li>
-        <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
-        <li><a href="#!">Second Link</a></li>
+        <li><a href="#!" onclick="logoutPressed()">Log out</a></li>
         <li><div class="divider"></div></li>
         <li><a class="subheader">Chats</a></li>
         <div id="mobile-chat-list">
@@ -140,19 +303,245 @@
         </ul>
         <div id="messages-area">
             <div id="messages">
+                <div id="new-chat-search-area">
+                    <div class="input-field" id="new-chat-chips">
+                    </div>
+                </div>
                 <div id="spacer"></div>
                 <div id="messages-wrapper">
                 </div>
             </div>
             <div id="typing-indicator">
             </div>
-            <div id="message-input">
-                <input type="text" id="message" />
-                <button onclick="sendMessage()">Send</button>
+            <div id="message-area">
+               <div id="reply-area" class="reply-active">
+                    <div id="reply-msg">
+
+                    </div>
+                    <div id="reply-area-close">
+                        <a href="#" onclick="cancelReply()" style="color: black;">
+                            <i class="material-icons">close</i>
+                        </a>
+                    </div>
+                </div>
+                <div id="message-input">
+                    <input type="text" id="message" class="reply" data-lpignore="true"/>
+                    <i class="material-icons right" id="send-btn" onclick="sendButtonPressed()">send</i>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>React</h4>
+      <!-- table of emojis to react with -->
+      <div class="row">
+        <div class="col m2 s3">
+          <a href="#" onclick="react('😀')"><h3>😀</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😆')"><h3>😆</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😁')"><h3>😁</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😅')"><h3>😅</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😂')"><h3>😂</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🤣')"><h3>🤣</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🥲')"><h3>🥲</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🙂')"><h3>🙂</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🙃')"><h3>🙃</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😉')"><h3>😉</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😌')"><h3>😌</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😎')"><h3>😎</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🤓')"><h3>🤓</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🤩')"><h3>🤩</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🥸')"><h3>🥸</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😍')"><h3>😍</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😊')"><h3>😊</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😋')"><h3>😋</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😘')"><h3>😘</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😗')"><h3>😗</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😙')"><h3>😙</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😚')"><h3>😚</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😜')"><h3>😜</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😝')"><h3>😝</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🤪')"><h3>🤪</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🥳')"><h3>🥳</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😏')"><h3>😏</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🤨')"><h3>🤨</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🧐')"><h3>🧐</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😒')"><h3>😒</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😔')"><h3>😔</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😞')"><h3>😞</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😟')"><h3>😟</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😣')"><h3>😣</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😖')"><h3>😖</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😩')"><h3>😩</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🥺')"><h3>🥺</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😢')"><h3>😢</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😭')"><h3>😭</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😮‍💨')"><h3>😮‍💨</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😤')"><h3>😤</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😡')"><h3>😡</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🤯')"><h3>🤯</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🥵')"><h3>🥵</h3></a>
+        </div>
+
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🤔')"><h3>🤔</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🤭')"><h3>🤭</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🤫')"><h3>🤫</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😵')"><h3>😵</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('😵‍💫')"><h3>😵‍💫</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🤐')"><h3>🤐</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🥴')"><h3>🥴</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('👀')"><h3>👀</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('👺')"><h3>👺</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('🗿')"><h3>🗿</h3></a>
+        </div>
+
+        <div class="col m2 s3">
+            <a href="#" onclick="react('❤️')"><h3>❤️</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('💔')"><h3>💔</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('❓')"><h3>❓</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('‼️')"><h3>‼️</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('⁉️')"><h3>⁉️</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('⚠️')"><h3>⚠️</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('👍')"><h3>👍</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('👎')"><h3>👎</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('👌')"><h3>👌</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('👊')"><h3>👊</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('✊')"><h3>✊</h3></a>
+        </div>
+        <div class="col m2 s3">
+            <a href="#" onclick="react('✌️')"><h3>✌</h3></a>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 <script>

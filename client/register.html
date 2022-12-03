@@ -6,7 +6,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script src="./login.js"></script>
+    <script src="./register.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -30,13 +30,13 @@
     <link rel="manifest" href="./manifest.webmanifest">
 </head>
 <style>
-    #login-container {
+    #register-container {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 400px;
-        height: 400px;
+        height: 600px;
         background-color: #fff;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -53,32 +53,44 @@
     }
 </style>
 <body class="row valign-wrapper">
-    <div id="login-container" class="card col s12 m6 l3">
-        <!-- login form -->
+    <div id="register-container" class="card col s12 m6 l3">
+        <!-- register form -->
         <div class="row">
-            <form class="col s12" action="#" onsubmit="loginPressed(); return false">
+            <form class="col s12" action="#" onsubmit="registerPressed(); return false">
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="email" type="email" class="validate" data-lpignore="true">
+                        <input id="name" type="text" class="validate">
+                        <label for="name">Name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="handle" type="text" class="validate">
+                        <label for="handle">Handle</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="email" type="email" class="validate">
                         <label for="email">Email</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="password" type="password" class="validate" data-lpignore="true">
+                        <input id="password" type="password" class="validate">
                         <label for="password">Password</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col s12">
-                        <button class="btn waves-effect waves-light" type="submit" onclick="loginPressed()">Login
+                        <button class="btn waves-effect waves-light">Register
                             <i class="material-icons right">send</i>
                         </button>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col s12">
-                        <a href="register.html">Sign Up</a>
+                        <a href="login.html">Log In</a>
                     </div>
                 </div>
             </form>

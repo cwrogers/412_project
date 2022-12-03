@@ -3,7 +3,8 @@ let database = require('../database');
 
 
 route.get('/', async (req, res) => {
-    let chats = await database.getChats(req.user_id)
+    let chats = await database.getChats(req.user_id);
+    chats.reverse();
     res.send({code: 200, success: true, chats});
 });
 
@@ -46,6 +47,13 @@ route.post('/:chat_id', async (req, res) => {
     let user_id = req.user_id;
     let success = await database.sendMessage(chat_id, user_id, message);
     res.status(success? 200 : 403).json({success});
+});
+
+route.get('/reaction/:reaction_id', async (req, res) => {
+    console.log("WHAT")
+    let reaction_id = req.params.reaction_id;
+    let reaction = await database.getReaction(reaction_id);
+    res.json({success: true, reaction});
 });
 
 
