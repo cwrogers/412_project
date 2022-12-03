@@ -38,6 +38,7 @@ route.post('/login', async (req, res) => {
 });
 
 route.post('/register', async (req, res) => {
+    console.log(req.body);
     // get username and password from request
     let email = req.body.email;
     let name = req.body.name;
@@ -55,17 +56,19 @@ route.post('/register', async (req, res) => {
     let emailInUse = await database.getUserByEmail(email) != null;
     let handleInUse = await database.getUserByHandle(handle) != null;
     if (emailInUse) {
-        res.status(400).json({success: false, error: "Email already in use"});
+        res.status(400).json({success: false, error: "Email already in use", code: 400});
         return;
     }
     if (handleInUse) {
-        res.status(400).json({success: false, error: "Handle already in use"});
+        res.status(400).json({success: false, error: "Handle already in use", code: 400});
         return;
     }
 
     // register user
-    let success = await database.registerUser(email, password, handle, name);
-    res.json({success: success});
+    let id = await database.registerUser(email, password, handle, name);
+    //generate token
+    let token = jwt.sign({user_id: id}, jwtSecret, {expiresIn: '48h'});
+    res.json({success: true, code: 200, user: {user_id: id, token, handle, name}});
 });
 
 

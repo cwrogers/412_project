@@ -38,6 +38,16 @@ route.post('/change_handle', async (req, res) => {
     res.json({success: success});
 });
 
+//search autocomplete
+route.get('/search/:query', async (req, res) => {
+    let query = req.params.query;
+    if(query.length < 3) {
+        res.json({success: true, users: []});
+        return;
+    }
+    let users = await database.searchUsers(query);
+    res.json({success: true, users});
+});
 
 // export route
 module.exports = route;
