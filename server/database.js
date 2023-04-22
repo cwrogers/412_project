@@ -6,7 +6,7 @@ const { Pool } = require('pg');
 const pool = new Pool({
     user: 'homework1',
     host: 'localhost',
-    database: 'project',
+    database: 'db',
     password: 'postgres',
     port: 5432,
 });
@@ -97,6 +97,15 @@ async function changeHandle(id, handle) {
     return true;
 }
 
+async function changePassword(id, password) {
+    // hash password
+    let hash = await bcrypt.hash(password, 10);
+    console.log(password, hash)
+    // update password
+    let res = await pool.query(`UPDATE "Auth" SET password = $1 WHERE user_id = $2`, [hash, id]);
+    console.log(res);
+    return true;
+}
 
 // get all messages for a chat from the database
 async function getMessages(chat, offset) {
@@ -121,6 +130,20 @@ async function sendMessage(chatId, userId, message) {
 async function sendReply(chatId, userId, message, replyTo) {
     let res = await pool.query(`INSERT INTO "Message" VALUES (DEFAULT, $1, $2, $3, DEFAULT, NULL, $4, NULL) RETURNING message_id`, [chatId, userId, message, replyTo]);
     return res.rows[0].message_id;
+}
+
+async function sendLocation(chatId, userId, message, lat, lon) {
+    let location_id = (await pool.query(`INSERT INTO "Location" VALUES (DEFAULT, $1, $2) returning location_id`, [lat, lon])).rows[0].location_id;
+    let res = await pool.query(`INSERT INTO "Message" VALUES (DEFAULT, $1, $2, $3, DEFAULT, NULL, NULL, NULL, $4) RETURNING message_id`, [chatId, userId, message ?? " ", location_id]);
+    return res.rows[0].message_id;
+}
+
+async function getLocation (locationId) {
+    let res = await pool.query(`SELECT * FROM "Location" WHERE location_id = $1`, [locationId]);
+    if (res.rows.length == 0) {
+        return null;
+    }
+    return res.rows[0];
 }
 
 async function getChats(userId) {
@@ -167,12 +190,15 @@ module.exports = {
     getUserByEmail,
     searchUsers,
     changeHandle,
+    changePassword,
     getChats,
     createChat,
     getMessages,
     getMessageById,
     sendMessage,
     sendReply,
+    sendLocation,
+    getLocation,
     react,
     getReaction
 };

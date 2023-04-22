@@ -36,6 +36,14 @@ route.get('/:chat_id', async (req, res) => {
     let chat_id = req.params.chat_id;
     let offset = req.query.offset? req.query.offset : 0;
     let messages = await database.getMessages(chat_id, offset);
+    for(message of messages) {
+         if(message.location_id != null) {
+            var loc = await database.getLocation(message.location_id);
+            console.log("LOCATION: " + JSON.stringify(loc))
+            message.lat = loc.lat;
+            message.long = loc.lon;
+        }
+    }
     res.json({success: true, messages});
 });
 

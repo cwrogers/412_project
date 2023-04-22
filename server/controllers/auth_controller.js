@@ -9,8 +9,8 @@ const jwtSecret = 'secret';
 // authentication routes
 route.post('/login', async (req, res) => {
     // get username and password from request
-    let email = req.body.email;
-    let password = req.body.password;
+    let email = req.body.email.trim().toLowerCase();
+    let password = req.body.password.trim();
 
     // get user from database
     let user = await database.authenticateUser(email, password);
@@ -33,6 +33,8 @@ route.post('/login', async (req, res) => {
         success: true,
         user
     }
+
+    console.log(resp);
 
     res.send(resp);
 });
@@ -69,6 +71,25 @@ route.post('/register', async (req, res) => {
     //generate token
     let token = jwt.sign({user_id: id}, jwtSecret, {expiresIn: '48h'});
     res.json({success: true, code: 200, user: {user_id: id, token, handle, name}});
+});
+
+route.post('/reset', async (req, res) => {
+    let email = req.body.email;
+    let pass = req.body.password;
+
+    let user = await database.getUserByEmail(email);
+    console.log(user)
+    if(user == null) {
+        res.status(402).json({success: false});
+        return;
+    }
+    let new_password = pass == null ? Math.random().toString(35).slice(-8) : pass;
+    let success = await database.changePassword(user.user_id, new_password);
+    if(success) {
+        res.send("Your new password is: " + new_password);
+    } else {
+        res.status(499).json({success: false});
+    }
 });
 
 

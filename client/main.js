@@ -368,6 +368,16 @@ async function renderMessages() {
             domElems.messages.prepend(messageElem);
         }
 
+        if(message.lat != null) {
+            //create map element
+            let mapElem = document.createElement("div");
+            mapElem.classList.add("map");
+            mapElem.setAttribute("lat", message.lat);
+            mapElem.setAttribute("lng", message.lng);
+            mapElem.setAttribute("zoom", message.zoom);
+            mapElem.setAttribute("timestamp", formatTimestamp(message.date));
+            
+        }
         
         
 
@@ -595,7 +605,7 @@ async function main() {
         window.location.href = "./login.html"
     }
 
-    socket = io("http://localhost:22222", {
+    socket = io("http://192.168.4.35:22222", {
         query: {
             token: cookies.login,
             user_id: cookies.user_id

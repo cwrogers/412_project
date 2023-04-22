@@ -1,6 +1,13 @@
 let route = require('express').Router();
 let database = require('../database');
 
+route.get('/myuser', async (req, res) => {
+    let user_id = req.user_id;
+    let user = await database.getUserById(user_id);
+    user.token = req.token;
+    res.json({code:200, success: true, user})
+});
+
 // get user by handle
 route.get('/:handle', async (req, res) => {
     let handle = req.params.handle;
@@ -23,20 +30,6 @@ route.post('/change_password', async (req, res) => {
     database.changePassword(user_id, new_password);
 });
 
-// change handle
-route.post('/change_handle', async (req, res) => {
-    let user_id = req.body.user;
-    let new_handle = req.body.new_handle;
-    res.json({user_id, new_handle})
-    return;
-    // check if handle is already in use
-    if(await database.getUserByHandle(new_handle) != null) {
-        res.status(403).json({success: false, error: "Handle already in use"});
-        return;
-    }
-    let success = await database.changeHandle(user_id, new_handle);
-    res.json({success: success});
-});
 
 //search autocomplete
 route.get('/search/:query', async (req, res) => {
@@ -48,6 +41,7 @@ route.get('/search/:query', async (req, res) => {
     let users = await database.searchUsers(query);
     res.json({success: true, users});
 });
+
 
 // export route
 module.exports = route;

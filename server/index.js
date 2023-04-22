@@ -11,6 +11,9 @@ const jwt = require('jsonwebtoken');
 const jwtSecret = 'secret';
 const jwtMiddleware = (req, res, next) => {
     let token = req.headers['authorization'];
+    
+    console.log(req.method, req.originalUrl)
+
     if (!token) {
         res.status(401).json({success: false, error: "No token provided"});
         return;
@@ -19,6 +22,7 @@ const jwtMiddleware = (req, res, next) => {
     token = token.replace('Bearer ', '');
     jwt.verify(token, jwtSecret, (err, decoded) => {
         if (err) {
+            console.log("invalid")
             res.status(401).json({success: false, error: "Invalid token"});
             return;
         }
@@ -26,6 +30,7 @@ const jwtMiddleware = (req, res, next) => {
         // get user id from token
         req.user_id = decoded.user_id;
         req.user = decoded;
+        req.token = token;
         next();
     });
 }

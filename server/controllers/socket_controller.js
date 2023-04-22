@@ -19,6 +19,7 @@ class SocketController {
     }
 
     socketAuth(socket, next) {
+        console.log("checking socket auth")
         let token = socket.handshake.query.token;
         if (!token) {
             next(new Error('No token provided'));
@@ -38,6 +39,7 @@ class SocketController {
     }
 
     onConnection(socket) {
+        console.log("socket connected")
         // open chat room connections
         database.getChats(socket.user_id).then(chats => {
             for (let chat of chats) {
@@ -48,6 +50,7 @@ class SocketController {
 
         socket.on('disconnect', () => {
             delete this.userSocekts[socket.user_id];
+            console.log("socket disconnected")
         });
 
         socket.on('typing', (data) => {
@@ -72,7 +75,10 @@ class SocketController {
                 user_id: userId,
                 content,
                 handle: socket.handle,
-                date: Date.now()
+                date: "" + "" + Date.now(),
+                replies_to: null,
+                reactions: [],
+                image_id: null
             });
         });
         
@@ -93,7 +99,31 @@ class SocketController {
                 content,
                 replies_to,
                 handle,
-                date: Date.now()
+                date: "" + "" + Date.now(),
+                reactions: [],
+                image_id: null
+            });
+        });
+
+        socket.on('location', async (data) => {
+            let chatId = data.chat_id;
+            let content = data.content;
+            let userId = socket.user_id;
+            let lat = data.lat;
+            let long = data.long;
+            let messageId = await database.sendLocation(chatId, userId, content, lat, long);
+            this.io.to("chat"+chatId).emit('message', {
+                chat_id: chatId,
+                message_id: messageId,
+                user_id: userId,
+                content: content ?? "",
+                handle: socket.handle,
+                date: "" + Date.now(),
+                replies_to: null,
+                reactions: [],
+                image_id: null,
+                lat,
+                long
             });
         });
 
